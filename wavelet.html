@@ -50,7 +50,12 @@
     <img src="img/wave_morton_quant.png" title="Example of z-order quantisation artefacts"/>
 
     <a name="quant"><h2>Quantisation</h2></a>
-    <p>Quantisation based on channel and coefficient order. Effects on image and filesize</p>
+    <p>Quantisation of wavelet coefficients has the greatest controllable effect on file size and image quality. For images that contain large blocks of similar value (the kind that perform well with PNG images) quantisation gives minimal gains. For complex natural images, quantisation gives very great reduction of file size with a corresponding reduction in image quality. We apply different quantisation levels to each channel -- reducing Luma the least, and chroma channels significantly. We do not sub-sample chroma directly, as the transform plus quantisation achieves the same effect but with the benefit of being adaptive.</p>
+    <p>Multiple different schemes of quantisation were tried, but by far the best effect was from a simple linear divide/multiply.</p>
+    <p>We apply a different quantisation factor to each round of the wavelet decomposition. The highest frequencies can take the most reduction, whereas the lowest frequencies show very significant degredation even at small reductions.</p>
+    <img src="img/wave_quant_strong.png" title="Example of heavy quantisation (0.26bpp)"/>
+    <img src="img/wave_quant_weak.png" title="Example of slight quantisation (1.94bpp)"/>
+    <img src="img/wave_quant_chroma.png" title="Example of heavy quantisation only on chroma channels (2.45bpp)"/>
 
     <a name="CoefLayout"><h2>Coefficient Layout for storage</h2></a>
     <p>Reordering by frequency scale to avoid mixing entropy, and for truncation support</p>
@@ -60,6 +65,7 @@
 
     <a name="entropy"><h2>Entropy encoding</h2></a>
     <p>Deflate, plus notes on markov arithmetic coding</p>
+    <p>Example 3 with quantisation: <tt>Deflate = 251.97kb (1.97 bpp)</tt>, <tt>Markov = 248.54kb (1.94 bpp)</tt></p>
 
     <a name="partial"><h2>Partial recovery</h2></a>
     <p>Decoding a smaller scale image (needs gamma correction), decoding a truncated stream (incl. interleaved channel streams)</p>
