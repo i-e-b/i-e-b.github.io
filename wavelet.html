@@ -18,12 +18,16 @@
         <li>Work in constrained memory</li>
         <li>Be best-in-class for speed or resulting file size</li>
     </ul>
+    <p>Code for these experiments is in the project at <a href="https://github.com/i-e-b/ImageTools">https://github.com/i-e-b/ImageTools</a></p>
 
-    <a name="FreqDecom"><h3>Frequency Decomposition</h3></a>
+    <a name="FreqDecom"><h2>Frequency Decomposition</h2></a>
     <!--Stuff about avoiding HH quarter that the standard docs use-->
-    <h4>Planar 3</h4>
+    <h3>Planar separation</h3>
     <p>The wavelet transform is inherently 1 dimensional. There are a few different ways to apply this to planar images (2D) and video (3D).
-    The method I've seen in most work (including JPEG2000) is what I'll call Planar 3, as it results in 3 sets of wavelet coefficients
+    I have looked into planar separation (applying the transform alternately to each individual row and column of the image) and spacefilling curve transforms (where we transform the image into a single 1 dimensional array and apply to transform in a single pass).</p>
+
+    <h4>Planar 3</h4>
+    <p>The method I've seen in most work (including JPEG2000) is what I'll call <i>Planar 3</i>, as it results in 3 sets of wavelet coefficients
     per decomposition round.</p>
     <img src="img/wave_planar3_seq.png" alt="decomposition sequence of Planar 3, which results in LH, HH, HL sets."/>
     <img src="img/wave_planar3_struct.png" alt="data structure of Planar 3, showing 3 sets of coefficients per round"/>
@@ -35,19 +39,33 @@
     <img src="img/wave_planar2_seq.png" alt="decomposition sequence of Planar 2, which results in LH, HL sets."/>
     <img src="img/wave_planar2_struct.png" alt="data structure of Planar 2, showing 2 sets of coefficients per round"/>
     <p>This reduces computation of the wavelet transform by 0.25, as the HH section is not calculated. It also improves
-    resulting file size. TODO: exact values here.</p>
-    <p>TODO: Z order and H order experiment failures.</p>
+    resulting file size: Using test image 3 and no quantisation <tt>Planar 3 = 691kb</tt>, <tt>Planar 2 = 655kb</tt>, or about 5% improvement.</p>
 
-    <a name="CoefLayout"><h3>Coefficient Layout for storage</h3></a>
+    <h3>Space filling curves</h3>
+    <p>I experimented using the 'Z order' and 'Hilbert' curves as spatial transforms. Both of these added significant processing time to perform the transform,
+    introduced significant compression artifacts during quantisation, and resulted in overall larger image sizes. I would consider this a strong failure.</p>
+    <p>Using test image 3 and no quantisation: <tt>Planar 2 = 655kb</tt>, <tt>Z-order = 871kb</tt></p>
+    <img src="img/wave_zorder_sfc.png" alt="Morton, or Z-order curve, showing sample order and round boundaries"/>
+    <img src="img/wave_hilbert_sfc.png" alt="Hilbert curve, showing sample points and round boundaries"/>
+    <img src="wave_morton_quant.png" title="Example of z-order quantisation artefacts"/>
+
+    <a name="quant"><h2>Quantisation</h2></a>
+    <p>Quantisation based on channel and coefficient order. Effects on image and filesize</p>
+
+    <a name="CoefLayout"><h2>Coefficient Layout for storage</h2></a>
     <p>Reordering by frequency scale to avoid mixing entropy, and for truncation support</p>
 
-    <a name="primary"><h3>Primary encoding</h3></a>
+    <a name="primary"><h2>Primary encoding</h2></a>
     <p>Fibonacci encoding, plus the failed variants</p>
 
-    <a name="entropy"><h3>Entropy encoding</h3></a>
+    <a name="entropy"><h2>Entropy encoding</h2></a>
     <p>Deflate, plus notes on markov arithmetic coding</p>
 
-    <a name="partial"><h3>Partial recovery</h3></a>
+    <a name="partial"><h2>Partial recovery</h2></a>
     <p>Decoding a smaller scale image (needs gamma correction), decoding a truncated stream (incl. interleaved channel streams)</p>
+
+
+    <a name="3dimg"><h2>3D images</h2></a>
+    <p>TODO: decomposition overlap, order invariance depth-first or plane-first (and encoding impact), temporal ringing.</p>
 </body>
 </html>
