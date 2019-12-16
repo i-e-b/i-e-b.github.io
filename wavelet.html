@@ -6,12 +6,40 @@
 <body>
     <h1>Wavelet image compression</h1>
     <p>General notes from experiments using wavelets for image compression.</p>
+    <p>The purpose of the project is to make a file format for images that meets these goals:</p>
+    <ul>
+        <li>Compete with PNG and JPG in terms of file size for a given image quality</li>
+        <li>Support reconstruction of a partial image from a truncated data source</li>
+        <li>Support animations / video with minimal complexity</li>
+        <li>Support arbitrary color spaces / channel counts</li>
+    </ul>
+    <p>Non-goals:</p>
+    <ul>
+        <li>Work in constrained memory</li>
+        <li>Be best-in-class for speed or resulting file size</li>
+    </ul>
 
     <a name="FreqDecom"><h3>Frequency Decomposition</h3></a>
-    <p>Stuff about avoiding HH quarter that the standard docs use</p>
+    <!--Stuff about avoiding HH quarter that the standard docs use-->
+    <h4>Planar 3</h4>
+    <p>The wavelet transform is inherently 1 dimensional. There are a few different ways to apply this to planar images (2D) and video (3D).
+    The method I've seen in most work (including JPEG2000) is what I'll call Planar 3, as it results in 3 sets of wavelet coefficients
+    per decomposition round.</p>
+    <img src="img/wave_planar3_seq.png" alt="decomposition sequence of Planar 3, which results in LH, HH, HL sets."/>
+    <img src="img/wave_planar3_struct.png" alt="data structure of Planar 3, showing 3 sets of coefficients per round"/>
+    <p>This includes a double-decomposition of coefficients in the HH region (marked 1, 4, 7 in the structure image).
+    My tests show that this both increases computation and reduces compression efficiency (i.e. gives larger file sizes for the
+    same input)</p>
+    <h4>Planar 2</h4>
+    <p>Instead, I propose 'Planar 2', which produces 2 sets of wavelet coefficients per decomposition round.</p>
+    <img src="img/wave_planar2_seq.png" alt="decomposition sequence of Planar 2, which results in LH, HL sets."/>
+    <img src="img/wave_planar2_struct.png" alt="data structure of Planar 2, showing 2 sets of coefficients per round"/>
+    <p>This reduces computation of the wavelet transform by 0.25, as the HH section is not calculated. It also improves
+    resulting file size. TODO: exact values here.</p>
+    <p>TODO: Z order and H order experiment failures.</p>
 
     <a name="CoefLayout"><h3>Coefficient Layout for storage</h3></a>
-    <p>Z order and H order experiment failures. Reordering by frequency scale to avoid mixing entropy</p>
+    <p>Reordering by frequency scale to avoid mixing entropy, and for truncation support</p>
 
     <a name="primary"><h3>Primary encoding</h3></a>
     <p>Fibonacci encoding, plus the failed variants</p>
@@ -20,6 +48,6 @@
     <p>Deflate, plus notes on markov arithmetic coding</p>
 
     <a name="partial"><h3>Partial recovery</h3></a>
-    <p>Decoding a smaller scale image (needs gamma correction), decoding a truncated stream</p>
+    <p>Decoding a smaller scale image (needs gamma correction), decoding a truncated stream (incl. interleaved channel streams)</p>
 </body>
 </html>
